@@ -1,7 +1,6 @@
 package purgecompletedk8sjobs
 
 import (
-	"errors"
 	"log"
 	"time"
 )
@@ -16,40 +15,38 @@ type PurgeResponse struct {
 // PurgeJobs : PurgeJobs
 func PurgeJobs(ns string, hrs int16, options map[string]string) PurgeResponse {
 
+	// Create the k8s client object
+	kClient := getK8sAPIClient()
+
+	// Compute the time before `hrs` hours
 	currentTime := time.Now()
 	reqTime := currentTime.Add(time.Duration(-hrs) * time.Hour)
 
 	log.Printf("Will attempt to delete all Jobs that got completed before %v (ie. before %d hrs)", reqTime, hrs)
 
-	kClient := getK8sAPIClient()
-
+	// Get all the jobs that have completed before reqTime
 	jobsToDelete, err := getEligibleJobs(kClient, ns, reqTime)
 	if err != nil {
-		return PurgeResponse{
-			Success: false,
-			Err:     err,
-		}
+		return PurgeResponse{Success: false, Err: err}
 	}
 
 	noOfJobs := len(jobsToDelete)
 	if noOfJobs > 0 {
 
+		// If there are any such jobs, delete them
 		log.Printf("Found %d jobs to delete, will attempt to delete them", noOfJobs)
-		// delete jobs
-
-	} else {
-
-		log.Printf("Found no eligible jobs to delete, returning...")
-		return PurgeResponse{
-			Success: true,
-			Msg:     "Found no jobs to delete",
-			Err:     nil,
+		msg, err := deleteJobs(kClient, ns, jobsToDelete)
+		if err != nil {
+			return PurgeResponse{Success: false, Err: err}
 		}
+		return PurgeResponse{Success: true, Msg: msg}
 
 	}
 
+	log.Printf("Found no eligible jobs to delete, returning...")
 	return PurgeResponse{
-		Success: false,
-		Err:     errors.New("Failed to process / delete the completed jobs"),
+		Success: true,
+		Msg:     "Found no jobs to delete",
+		Err:     nil,
 	}
 }

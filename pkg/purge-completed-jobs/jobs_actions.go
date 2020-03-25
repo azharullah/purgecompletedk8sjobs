@@ -2,6 +2,7 @@ package purgecompletedk8sjobs
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	batchv1 "k8s.io/api/batch/v1"
@@ -35,11 +36,38 @@ func getEligibleJobs(c *kubernetes.Clientset, n string, t time.Time) (jobList []
 
 }
 
-// propagationPolicy := metav1.DeletePropagationForeground
-// deleteOptions := &metav1.DeleteOptions{
-// 	PropagationPolicy: &propagationPolicy,
-// }
-// err = c.BatchV1().Jobs(n).Delete(job.GetName(), deleteOptions)
-// if err != nil {
-// 	log.Fatalf("Failed to delete the job, error: %v", err.Error())
-// }
+func deleteJobs(c *kubernetes.Clientset, n string, j []batchv1.Job) (retMsg string, err error) {
+
+	retMsg = ""
+	deleteSuccesses := []string{}
+	deleteFailures := []string{}
+
+	// Set the propagation Policy to Foreground
+	propagationPolicy := metav1.DeletePropagationForeground
+	deleteOptions := &metav1.DeleteOptions{
+		PropagationPolicy: &propagationPolicy,
+	}
+
+	for _, job := range j {
+
+		jobName := job.GetName()
+		err = c.BatchV1().Jobs(n).Delete(jobName, deleteOptions)
+		if err != nil {
+			deleteFailures = append(deleteFailures, "Failed to delete job [%v], error: %v", jobName, err.Error())
+		}
+		deleteSuccesses = append(deleteSuccesses, jobName)
+
+	}
+
+	if len(deleteSuccesses) > 0 {
+		retMsg += "\nSuccessfully deleted the following jobs:\n"
+		retMsg += strings.Join(deleteSuccesses, "\n")
+	}
+
+	if len(deleteFailures) > 0 {
+		retMsg += "\nFailed to deleted the following jobs:\n"
+		retMsg += strings.Join(deleteFailures, "\n")
+	}
+
+	return retMsg, nil
+}
