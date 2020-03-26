@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 			options["eventsLogFile"] = eventsLogFile
 		}
 
-		specLogFile, err := cmd.Flags().GetString("events-log-file")
+		specLogFile, err := cmd.Flags().GetString("spec-log-file")
 		if specLogFile != "" {
 			options["specLogFile"] = specLogFile
 		}
