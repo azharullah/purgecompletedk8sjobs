@@ -35,12 +35,11 @@ func PurgeJobs(ns string, hrs int16, options map[string]string) PurgeResponse {
 
 		// If there are any such jobs, delete them
 		log.Printf("Found %d jobs to delete, will attempt to delete them", noOfJobs)
-		msg, err := deleteJobs(kClient, ns, jobsToDelete)
+		msg, err := deleteJobs(kClient, ns, jobsToDelete, options)
 		if err != nil {
 			return PurgeResponse{Success: false, Err: err}
 		}
 		return PurgeResponse{Success: true, Msg: msg}
-
 	}
 
 	log.Printf("Found no eligible jobs to delete, returning...")

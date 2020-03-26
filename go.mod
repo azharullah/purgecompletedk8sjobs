@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v0.0.6
 	k8s.io/api v0.17.4
 	k8s.io/apimachinery v0.17.4
