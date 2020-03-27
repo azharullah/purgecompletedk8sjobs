@@ -17,9 +17,10 @@ limitations under the License.
 package main
 
 import (
-	"log"
+	"os"
 
 	"github.com/azharullah/purge-completed-k8s-jobs/cmd"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -27,6 +28,30 @@ func main() {
 }
 
 func init() {
-	// Enable file name and line number in logs
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	// Set the log level, if not specified via env
+	lvl, ok := os.LookupEnv("LOG_LEVEL")
+
+	// LOG_LEVEL not set, let's default to debug
+	if !ok {
+		lvl = "debug"
+	}
+
+	// parse string, this is built-in feature of logrus
+	ll, err := logrus.ParseLevel(lvl)
+	if err != nil {
+		ll = logrus.DebugLevel
+	}
+
+	// set global log level
+	logrus.SetLevel(ll)
+	logrus.SetReportCaller(true)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors: true,
+		// CallerPrettyfier: func(f *runtime.Frame) (string, string) {
+		// 	filename := path.Base(f.File)
+		// 	log.Printf("%#v", f)
+		// 	return fmt.Sprintf("%s()", f.Function), fmt.Sprintf("%s:%d", filename, f.Line)
+		// },
+	})
 }
