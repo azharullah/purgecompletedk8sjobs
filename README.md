@@ -1,6 +1,6 @@
 # PurgeK8sJobs
 
-PurgeK8sJobs is package to completed Kubernetes Jobs.
+PurgeK8sJobs is package to purge the completed Kubernetes Jobs.
 
 ### Why PurgeK8sJobs?
 
