@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/sirupsen/logrus"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -33,6 +33,8 @@ func logJobSpecToFile(j batchv1.Job, f string) (err error) {
 	return nil
 }
 
+// logJobEventsToFile takes the jobs event list and then appends it to the provided file.
+// Raises an error if the spec cannot be appended to a file
 func logJobEventsToFile(j batchv1.Job, je corev1.EventList, f string) (err error) {
 
 	jobEventBytes, err := json.MarshalIndent(je, "", "\t")
@@ -48,6 +50,8 @@ func logJobEventsToFile(j batchv1.Job, je corev1.EventList, f string) (err error
 	return nil
 }
 
+// appendBytesToFile takes a byte slice and an optional message and
+// appends them to the provided file - `f`
 func appendBytesToFile(b []byte, f string, m string) (err error) {
 
 	sep := strings.Repeat("*", 80)
@@ -74,7 +78,7 @@ func appendBytesToFile(b []byte, f string, m string) (err error) {
 	defer fileHandler.Close()
 
 	// Append the content to the file
-	log.Printf("Writing content to file: %v", fileHandler.Name())
+	logrus.Debugf("Writing content to file: %v", fileHandler.Name())
 	_, err = fileHandler.Write([]byte(fullLogStr))
 	if err != nil {
 		return errors.New("Failed to write the content to the file, error: " + err.Error())

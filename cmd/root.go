@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"fmt"
-	"log"
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	purgeCompletedK8sJobs "github.com/azharullah/purge-completed-k8s-jobs/pkg/purge-completed-jobs"
@@ -19,31 +18,37 @@ var rootCmd = &cobra.Command{
 	Short: cmdDescription,
 	Long:  cmdDescription,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Print("Starting executions")
 
 		namespace, err := cmd.Flags().GetString("namespace")
+		logrus.WithField("ns", namespace).Info("Will process jobs in the namespace")
+
 		beforeHours, err := cmd.Flags().GetInt16("before-hours")
 		options := map[string]string{}
+		logrus.WithField("x", beforeHours).Info("Will process jobs that completed before")
 
 		eventsLogFile, err := cmd.Flags().GetString("events-log-file")
 		if eventsLogFile != "" {
 			options["eventsLogFile"] = eventsLogFile
+			logrus.WithField("events-file", eventsLogFile).Info("Will dump the deleted job events, if available to")
 		}
 
 		specLogFile, err := cmd.Flags().GetString("spec-log-file")
 		if specLogFile != "" {
 			options["specLogFile"] = specLogFile
+			logrus.WithField("spec-file", specLogFile).Info("Will dump the deleted job spec to")
 		}
 
+		// Take care of this
 		if err != nil {
 			panic(err.Error())
 		}
 
+		// Start purging the jobs
 		resp := purgeCompletedK8sJobs.PurgeJobs(namespace, beforeHours, options)
 		if resp.Success {
-			log.Print(resp.Msg)
+			logrus.WithField("result", resp.Msg).Info("Completed exection.")
 		} else {
-			log.Printf("Failed to delete some / all the compeleted job(s), error: %v", resp.Err.Error())
+			logrus.WithField("error", resp.Err.Error()).Info("Failed to delete some / all the compeleted job(s)")
 		}
 
 	},
@@ -53,7 +58,7 @@ var rootCmd = &cobra.Command{
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		logrus.Fatalf(err.Error())
 		os.Exit(1)
 	}
 }
