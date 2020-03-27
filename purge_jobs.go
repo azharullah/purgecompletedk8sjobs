@@ -1,3 +1,6 @@
+// Package purgecompletedk8sjobs provides a method to delete K8s jobs which have been
+// completed, with a few additional and optional features to help with debugging and
+// trackability.
 package purgecompletedk8sjobs
 
 import (
