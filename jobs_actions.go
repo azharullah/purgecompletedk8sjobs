@@ -1,4 +1,4 @@
-package purgecompletedk8sjobs
+package purgek8sjobs
 
 import (
 	"errors"
