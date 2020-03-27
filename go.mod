@@ -1,4 +1,4 @@
-module github.com/azharullah/purge-completed-k8s-jobs
+module github.com/azharullah/purgek8sjobs
 
 go 1.14
 
