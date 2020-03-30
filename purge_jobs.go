@@ -16,7 +16,8 @@ type PurgeResponse struct {
 	Err     error
 }
 
-// PurgeJobs : PurgeJobs
+// PurgeJobs creates an authenticated K8s API Client, queries the K8s jobs in
+// the namespace `ns` that completed exection before `hrs` hours and deletes them
 func PurgeJobs(ns string, hrs int16, options map[string]string) PurgeResponse {
 
 	// Create the k8s client object
