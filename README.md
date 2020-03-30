@@ -1,7 +1,7 @@
 # PurgeK8sJobs
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/azharullah/purgek8sjobs)](https://goreportcard.com/report/github.com/azharullah/purgek8sjobs)
-[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/azharullah/purgek8sjobs?tab=doc)[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/azharullah/purgek8sjobs?tab=doc)
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/azharullah/purgek8sjobs?tab=doc)
 
 PurgeK8sJobs is package to purge the completed Kubernetes Jobs.
 
